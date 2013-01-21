@@ -32,6 +32,10 @@
 	<%= _testProperty("field.enable.com.liferay.portal.model.Organization.status", true) %>
 </p>
 
+<p>
+	value.object.listener.com.liferay.portal.model.User=<%= _assertEquals("com.liferay.testhook.hook.listeners.UserListener", PropsUtil.get("value.object.listener.com.liferay.portal.model.User")) %><br />
+</p>
+
 <h3>language-properties</h3>
 
 <p>
@@ -52,6 +56,10 @@
 
 <p>
 	com.liferay.portal.service.UserLocalService=<%= _assertEquals(TestHookUserImpl.class.getName(), UserLocalServiceUtil.getUserByEmailAddress(themeDisplay.getCompanyId(), "test@liferay.com").getClass().getName()) %>
+</p>
+
+<p>
+	com.liferay.portal.model.User is unwrapped=<%= _assertTrue(TestHookUtil.testWrappedModel()) %>
 </p>
 
 <%!
