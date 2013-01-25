@@ -14,11 +14,6 @@
 
 package com.liferay.testhook.util;
 
-import java.io.File;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-
 import com.liferay.portal.ModelListenerException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -41,17 +36,17 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.util.PwdGenerator;
 
+import java.io.File;
+
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+
 /**
  * @author Brian Wing Shun Chan
  */
 public class TestHookUtil {
 
-	private static long _companyId;
-
-	private static long _groupId;
-
-	private static User _user;
-	
 	public static File getStartupActionFile() {
 		return _instance._getStartupActionFile();
 	}
@@ -86,10 +81,10 @@ public class TestHookUtil {
 			boolean sendMail = false;
 
 			User user = UserLocalServiceUtil.addUser(
-				_getUser().getUserId(), _getCompanyId(),
-				autoPassword, password1, password2, autoScreenName, screenName,
-				emailAddress, facebookId, openId, locale, firstName, middleName,
-				lastName, prefixId, suffixId, male, birthdayMonth, birthdayDay,
+				_getUser().getUserId(), _getCompanyId(), autoPassword,
+				password1, password2, autoScreenName, screenName, emailAddress,
+				facebookId, openId, locale, firstName, middleName, lastName,
+				prefixId, suffixId, male, birthdayMonth, birthdayDay,
 				birthdayYear, jobTitle, groupIds, organizationIds, roleIds,
 				userGroupIds, sendMail, _getServiceContext());
 
@@ -97,16 +92,11 @@ public class TestHookUtil {
 
 		} catch (ModelListenerException mle) {
 			mle.printStackTrace();
+
 			return false;
-		} 
+		}
+
 		return true;
-	}
-
-	private TestHookUtil() {
-		String tmpDir = SystemProperties.get(SystemProperties.TMP_DIR);
-
-		_startupActionFileName =
-			tmpDir + "/liferay/testhook/" + Time.getTimestamp();
 	}
 
 	private static long _getCompanyId()
@@ -117,7 +107,7 @@ public class TestHookUtil {
 		}
 
 		Company company = CompanyLocalServiceUtil.getCompanyByWebId(
-				PropsUtil.get(PropsKeys.COMPANY_DEFAULT_WEB_ID));
+			PropsUtil.get(PropsKeys.COMPANY_DEFAULT_WEB_ID));
 
 		_companyId = company.getCompanyId();
 
@@ -150,27 +140,40 @@ public class TestHookUtil {
 		return serviceContext;
 	}
 
+	private static User _getUser() throws PortalException, SystemException {
+
+		if (_user == null) {
+			Role role = RoleLocalServiceUtil.getRole(
+				_getCompanyId(), RoleConstants.ADMINISTRATOR);
+
+			List<User> users = UserLocalServiceUtil.getRoleUsers(
+				role.getRoleId(), 0, 2);
+
+			_user = users.get(0);
+
+		}
+
+		return _user;
+	}
+
+	private TestHookUtil() {
+		String tmpDir = SystemProperties.get(SystemProperties.TMP_DIR);
+
+		_startupActionFileName =
+			tmpDir + "/liferay/testhook/" + Time.getTimestamp();
+	}
+
 	private File _getStartupActionFile() {
 		return new File(_startupActionFileName);
 	}
 
-	private static User _getUser() throws PortalException, SystemException {
-	
-		if (_user == null) {
-			Role role = RoleLocalServiceUtil.getRole(
-				_getCompanyId(), RoleConstants.ADMINISTRATOR);
-	
-			List<User> users = UserLocalServiceUtil.getRoleUsers(
-				role.getRoleId(), 0, 2);
-	
-			_user = users.get(0);
-	
-		}
-	
-		return _user;
-	}
-
 	private static TestHookUtil _instance = new TestHookUtil();
+
+	private static long _companyId;
+
+	private static long _groupId;
+
+	private static User _user;
 
 	private String _startupActionFileName;
 

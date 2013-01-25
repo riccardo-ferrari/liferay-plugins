@@ -31,6 +31,17 @@ public class TestHookUserLocalServiceImpl extends UserLocalServiceWrapper {
 	}
 
 	@Override
+	public User getUser(long userId) throws PortalException, SystemException {
+
+		System.out.println(
+			"Called TestHookUserLocalServiceImpl.getUser(" + userId + ")");
+
+		User user = super.getUser(userId);
+
+		return new TestHookUserImpl(user);
+	}
+
+	@Override
 	public User getUserByEmailAddress(long companyId, String emailAddress)
 		throws PortalException, SystemException {
 
@@ -51,17 +62,6 @@ public class TestHookUserLocalServiceImpl extends UserLocalServiceWrapper {
 			"Called TestHookUserLocalServiceImpl.getUserById(" + userId + ")");
 
 		User user = super.getUserById(userId);
-
-		return new TestHookUserImpl(user);
-	}
-
-	@Override
-	public User getUser(long userId) throws PortalException, SystemException {
-
-		System.out.println(
-			"Called TestHookUserLocalServiceImpl.getUser(" + userId + ")");
-
-		User user = super.getUser(userId);
 
 		return new TestHookUserImpl(user);
 	}
